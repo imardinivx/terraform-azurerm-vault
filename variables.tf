@@ -22,6 +22,11 @@ variable "sku_name" {
   description = "SKU name for the Key Vault (standard or premium)"
   type        = string
   default     = "standard"
+
+  validation {
+    condition     = contains(["standard", "premium"], var.sku_name)
+    error_message = "SKU name must be 'standard' or 'premium'."
+  }
 }
 
 variable "enabled_for_disk_encryption" {
@@ -55,9 +60,20 @@ variable "purge_protection_enabled" {
 }
 
 variable "soft_delete_retention_days" {
-  description = "Number of days to retain soft-deleted keys"
+  description = "Number of days to retain soft-deleted keys (7-90)"
   type        = number
   default     = 7
+
+  validation {
+    condition     = var.soft_delete_retention_days >= 7 && var.soft_delete_retention_days <= 90
+    error_message = "Soft delete retention days must be between 7 and 90."
+  }
+}
+
+variable "public_network_access_enabled" {
+  description = "Whether public network access is enabled"
+  type        = bool
+  default     = true
 }
 
 variable "network_acls" {
