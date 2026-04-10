@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.1.0...v0.2.0) (2026-04-10)
+
+
+### Features
+
+* add wiki auto-update workflow ([d717074](https://github.com/imardinivx/terraform-azurerm-vault/commit/d717074607da7cea4a70a3303aeb4bcd19f85b84))
+* add wiki auto-update workflow ([bab8fad](https://github.com/imardinivx/terraform-azurerm-vault/commit/bab8fad2721ba778f72d61a883be5fd4a97cfd09))
+
 ## 0.1.0 (2026-04-10)
 
 
