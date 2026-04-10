@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.3.1...v1.0.0) (2026-04-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* Variable enable_rbac_authorization has been renamed to rbac_authorization_enabled for consistency with other variable names.
+
+### Features
+
+* rename enable_rbac_authorization to rbac_authorization_enabled ([0a359a6](https://github.com/imardinivx/terraform-azurerm-vault/commit/0a359a62e5aebae5c3cc0054c82469b9bbfb7411))
+
 ## [0.3.1](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.3.0...v0.3.1) (2026-04-10)
 
 
