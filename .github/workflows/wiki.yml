@@ -1,8 +1,6 @@
 name: Wiki
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -161,6 +159,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No wiki changes to commit"
           else
-            git commit -m "Update wiki for ${{ github.event.release.tag_name || 'manual run' }}"
+            git commit -m "Update wiki (manual run)"
             git push
           fi
