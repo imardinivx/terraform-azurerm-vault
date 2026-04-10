@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v1.0.0...v1.1.0) (2026-04-10)
+
+
+### Features
+
+* make wiki content dynamic using terraform-docs ([f0ee267](https://github.com/imardinivx/terraform-azurerm-vault/commit/f0ee267d8607c0ccead70278e5e746233e7e2bc5))
+* make wiki content dynamic using terraform-docs ([7c613d8](https://github.com/imardinivx/terraform-azurerm-vault/commit/7c613d8b58c4d336a102ffc6035d32f840012022))
+
 ## [1.0.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.3.1...v1.0.0) (2026-04-10)
 
 
