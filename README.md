@@ -68,5 +68,6 @@ No modules.
 |------|-------------|
 | <a name="output_id"></a> [id](#output\_id) | The ID of the Key Vault |
 | <a name="output_name"></a> [name](#output\_name) | The name of the Key Vault |
+| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | The resource group name of the Key Vault |
 | <a name="output_uri"></a> [uri](#output\_uri) | The URI of the Key Vault |
 <!-- END_TF_DOCS -->
