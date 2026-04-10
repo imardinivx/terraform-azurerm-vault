@@ -1,6 +1,12 @@
 name: Wiki
 
 on:
+  workflow_call:
+    inputs:
+      tag_name:
+        description: 'Release tag name'
+        required: false
+        type: string
   workflow_dispatch:
 
 permissions:
@@ -17,102 +23,125 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags
 
+      - name: Install terraform-docs
+        run: |
+          curl -sSLo terraform-docs.tar.gz https://terraform-docs.io/dl/v0.19.0/terraform-docs-v0.19.0-linux-amd64.tar.gz
+          tar -xzf terraform-docs.tar.gz
+          chmod +x terraform-docs
+          sudo mv terraform-docs /usr/local/bin/
+
       - name: Generate wiki content
+        env:
+          TAG_NAME: ${{ inputs.tag_name || 'latest' }}
         run: |
           mkdir -p wiki
 
-          # Home page
-          cat > wiki/Home.md << 'EOF'
-          # terraform-azurerm-vault
+          # Get module info as JSON
+          terraform-docs json . > module.json
 
-          Terraform module for creating Azure Key Vault resources.
+          # Extract names
+          MODULE_NAME="${GITHUB_REPOSITORY##*/}"
+          SHORT_NAME="${MODULE_NAME#terraform-azurerm-}"
 
-          ## Quick Links
+          # Get description from README (line 3)
+          DESCRIPTION=$(sed -n '3p' README.md)
 
-          - [Module Versions](Module-Versions)
-          - [Usage Examples](Usage-Examples)
+          # Generate required vars for examples
+          REQUIRED_VARS=$(jq -r '.inputs[] | select(.required == true) | "  \(.name) = \"<\(.name)>\""' module.json)
+
+          # Home.md
+          cat > wiki/Home.md << EOF
+          # ${MODULE_NAME}
+
+          ${DESCRIPTION}
+
+          ## Documentation
+
+          - [Inputs](Inputs) - Input variables
+          - [Outputs](Outputs) - Output values
+          - [Module Versions](Module-Versions) - Version pinning
+          - [Usage Examples](Usage-Examples) - Common patterns
           EOF
 
-          # Module versions page
-          cat > wiki/Module-Versions.md << 'HEADER'
-          # Module Versions
+          # Inputs.md
+          {
+            echo "# Inputs"
+            echo ""
+            terraform-docs markdown table --show inputs .
+          } > wiki/Inputs.md
 
-          This page explains how to pin the module to a specific version.
+          # Outputs.md
+          {
+            echo "# Outputs"
+            echo ""
+            terraform-docs markdown table --show outputs .
+          } > wiki/Outputs.md
+
+          # Module-Versions.md
+          cat > wiki/Module-Versions.md << EOF
+          # Module Versions
 
           ## Using a Specific Version (Recommended)
 
-          Always pin to a specific version in production:
+          \`\`\`hcl
+          module "${SHORT_NAME}" {
+            source = "github.com/${GITHUB_REPOSITORY}?ref=${TAG_NAME}"
 
-          ```hcl
-          module "vault" {
-            source = "github.com/${{ github.repository }}?ref=v1.0.0"
-
-            name                = "my-keyvault"
-            resource_group_name = "my-rg"
-            location            = "eastus"
-            tenant_id           = data.azurerm_client_config.current.tenant_id
+          ${REQUIRED_VARS}
           }
-          ```
-
-          ## Using Latest (Not Recommended for Production)
-
-          ```hcl
-          module "vault" {
-            source = "github.com/${{ github.repository }}"
-            # ...
-          }
-          ```
+          \`\`\`
 
           ## Available Versions
 
           | Version | Release Date | Notes |
           |---------|--------------|-------|
-          HEADER
+          EOF
 
-          # Add each tag to the versions table
           git tag -l 'v*' --sort=-v:refname | while read tag; do
             date=$(git log -1 --format=%cs "$tag" 2>/dev/null || echo "N/A")
-            echo "| \`$tag\` | $date | [Release notes](https://github.com/${{ github.repository }}/releases/tag/$tag) |" >> wiki/Module-Versions.md
+            echo "| \`$tag\` | $date | [Release notes](https://github.com/${GITHUB_REPOSITORY}/releases/tag/$tag) |" >> wiki/Module-Versions.md
           done
 
           # If no tags yet
-          if [ ! -s wiki/Module-Versions.md ] || ! grep -q "^| \`v" wiki/Module-Versions.md; then
+          if ! grep -q "^| \`v" wiki/Module-Versions.md; then
             echo "| *No releases yet* | - | - |" >> wiki/Module-Versions.md
           fi
 
-          # Usage examples page
-          cat > wiki/Usage-Examples.md << 'EOF'
+          # Usage-Examples.md - generate dynamically based on actual variables
+          # Get network_acls type info
+          HAS_NETWORK_ACLS=$(jq -r '.inputs[] | select(.name == "network_acls") | .name' module.json)
+
+          cat > wiki/Usage-Examples.md << EOF
           # Usage Examples
 
           ## Basic Usage
 
-          ```hcl
+          \`\`\`hcl
           data "azurerm_client_config" "current" {}
 
-          module "vault" {
-            source = "github.com/${{ github.repository }}?ref=v1.0.0"
+          module "${SHORT_NAME}" {
+            source = "github.com/${GITHUB_REPOSITORY}?ref=${TAG_NAME}"
 
-            name                = "kv-myapp-prod"
-            resource_group_name = azurerm_resource_group.main.name
-            location            = azurerm_resource_group.main.location
-            tenant_id           = data.azurerm_client_config.current.tenant_id
+          ${REQUIRED_VARS}
 
             tags = {
               Environment = "production"
             }
           }
-          ```
+          \`\`\`
+          EOF
+
+          # Add network ACLs example if the variable exists
+          if [ -n "$HAS_NETWORK_ACLS" ]; then
+            cat >> wiki/Usage-Examples.md << EOF
 
           ## With Network Restrictions
 
-          ```hcl
-          module "vault" {
-            source = "github.com/${{ github.repository }}?ref=v1.0.0"
+          \`\`\`hcl
+          module "${SHORT_NAME}" {
+            source = "github.com/${GITHUB_REPOSITORY}?ref=${TAG_NAME}"
 
-            name                          = "kv-myapp-prod"
-            resource_group_name           = azurerm_resource_group.main.name
-            location                      = azurerm_resource_group.main.location
-            tenant_id                     = data.azurerm_client_config.current.tenant_id
+          ${REQUIRED_VARS}
             public_network_access_enabled = false
 
             network_acls = {
@@ -122,32 +151,37 @@ jobs:
               virtual_network_subnet_ids = [azurerm_subnet.main.id]
             }
           }
-          ```
+          \`\`\`
+          EOF
+          fi
+
+          # Add premium SKU example if sku_name variable exists
+          HAS_SKU=$(jq -r '.inputs[] | select(.name == "sku_name") | .name' module.json)
+          if [ -n "$HAS_SKU" ]; then
+            cat >> wiki/Usage-Examples.md << EOF
 
           ## With Premium SKU
 
-          ```hcl
-          module "vault" {
-            source = "github.com/${{ github.repository }}?ref=v1.0.0"
+          \`\`\`hcl
+          module "${SHORT_NAME}" {
+            source = "github.com/${GITHUB_REPOSITORY}?ref=${TAG_NAME}"
 
-            name                = "kv-myapp-prod"
-            resource_group_name = azurerm_resource_group.main.name
-            location            = azurerm_resource_group.main.location
-            tenant_id           = data.azurerm_client_config.current.tenant_id
-            sku_name            = "premium"
+          ${REQUIRED_VARS}
+            sku_name = "premium"
 
             purge_protection_enabled   = true
             soft_delete_retention_days = 90
           }
-          ```
+          \`\`\`
           EOF
+          fi
 
       - name: Push to wiki
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki-repo || {
+          git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki-repo || {
             echo "Wiki not initialized. Please create a page manually first."
             exit 0
           }
@@ -159,6 +193,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No wiki changes to commit"
           else
-            git commit -m "Update wiki (manual run)"
+            git commit -m "Update wiki for ${TAG_NAME:-manual run}"
             git push
           fi
