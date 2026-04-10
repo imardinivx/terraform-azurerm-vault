@@ -47,7 +47,7 @@ variable "enabled_for_template_deployment" {
   default     = false
 }
 
-variable "enable_rbac_authorization" {
+variable "rbac_authorization_enabled" {
   description = "Whether RBAC authorization is enabled instead of access policies"
   type        = bool
   default     = true
