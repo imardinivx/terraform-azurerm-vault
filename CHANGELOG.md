@@ -1,0 +1,17 @@
+# Changelog
+
+## 0.1.0 (2026-04-10)
+
+
+### Features
+
+* add resource_group_name output ([fdaf1ea](https://github.com/imardinivx/terraform-azurerm-vault/commit/fdaf1ea4554ebd64134e30f22365653b1fc09fd9))
+* add resource_group_name output ([cd926f7](https://github.com/imardinivx/terraform-azurerm-vault/commit/cd926f75b71369b0aeb28db83c013640d00bfe56))
+* add variable validation, public network access, and basic example ([a998efe](https://github.com/imardinivx/terraform-azurerm-vault/commit/a998efefb8107201a7ccfaa1d9ddeccc88cab493))
+* initial terraform-azurerm-vault module ([ec949f8](https://github.com/imardinivx/terraform-azurerm-vault/commit/ec949f84251f1c6df30372715fce4ef45d300735))
+
+
+### Bug Fixes
+
+* constrain azurerm provider to major version 3-4 ([b440c88](https://github.com/imardinivx/terraform-azurerm-vault/commit/b440c88ea838b96e9e017063cc4d3ee1988f23df))
+* use Node.js 24 for release-please action ([06de6c1](https://github.com/imardinivx/terraform-azurerm-vault/commit/06de6c1591a2df9bc60344a43a4839714a9256d4))
