@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.2.0...v0.3.0) (2026-04-10)
+
+
+### Features
+
+* add wiki workflow and release preview ([941eeda](https://github.com/imardinivx/terraform-azurerm-vault/commit/941eeda031bd784106eb4c537bb146ef30fb7bee))
+
 ## [0.2.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.1.0...v0.2.0) (2026-04-10)
 
 
