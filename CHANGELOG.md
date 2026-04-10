@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.3.0...v0.3.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* trigger wiki update from release-please workflow ([1721435](https://github.com/imardinivx/terraform-azurerm-vault/commit/17214352e85bca1bf48350875cc47e2d8f395fc4))
+* trigger wiki update from release-please workflow ([adbc5b1](https://github.com/imardinivx/terraform-azurerm-vault/commit/adbc5b188ba8f429df2769fdef0b7842176275b7))
+
 ## [0.3.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v0.2.0...v0.3.0) (2026-04-10)
 
 
