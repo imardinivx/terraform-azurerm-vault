@@ -13,7 +13,7 @@ resource "azurerm_key_vault" "this" { // this is a new feature
   soft_delete_retention_days      = var.soft_delete_retention_days
   public_network_access_enabled   = var.public_network_access_enabled
 
-  dynamic "network_acls" {
+  dynamic "network_acls" { // dynamic block to handle optional network ACLs configuration
     for_each = var.network_acls != null ? [var.network_acls] : []
 
     content {
