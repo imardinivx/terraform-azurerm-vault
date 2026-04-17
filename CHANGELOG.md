@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/imardinivx/terraform-azurerm-vault/compare/v1.2.0...v1.2.1) (2026-04-17)
+
+
+### Bug Fixes
+
+* comment ([4562028](https://github.com/imardinivx/terraform-azurerm-vault/commit/456202848881ef7b1bfcc1cc9bb80af65e7bc787))
+* comment ([f159c21](https://github.com/imardinivx/terraform-azurerm-vault/commit/f159c21ca95e8e5e9d6f17eb048609113164da7c))
+
 ## [1.2.0](https://github.com/imardinivx/terraform-azurerm-vault/compare/v1.1.0...v1.2.0) (2026-04-17)
 
 
